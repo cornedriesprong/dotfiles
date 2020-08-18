@@ -1,0 +1,219 @@
+set background=dark
+
+" turn on syntax highlighting
+syntax on
+
+" display line numbers
+set number
+
+" display cursor line
+set cursorline
+
+" two tabs
+set tabstop=1
+
+" highlight searches
+set hlsearch
+
+" enable mouse
+set mouse=a
+
+" no error bells
+set belloff=all
+
+" Don't reset cursor to start of line when moving around.
+set nostartofline
+
+" Show the cursor position
+set ruler
+
+"""""""""""""""""""""""""""""""
+" SuperCollider stuff
+"""""""""""""""""""""""""""""""
+" wrap supercollider post window
+autocmd FileType scnvim setlocal wrap
+
+" scnvim neovim docs !
+let g:scnvim_scdoc = 1
+
+" vertical 'v' or horizontal 'h' split
+let g:scnvim_postwin_orientation = 'v'
+
+" position of the post window 'right' or 'left'
+let g:scnvim_postwin_direction = 'right'
+
+" default is half the terminal size for vertical and a third for horizontal
+let g:scnvim_postwin_size = 50
+
+" automatically open post window on a SuperCollider error
+let g:scnvim_postwin_auto_toggle = 1
+
+" duration of the highlight
+let g:scnvim_eval_flash_duration = 100
+
+" number of flashes. A value of 0 disables this feature.
+let g:scnvim_eval_flash_repeats = 5
+
+" set this variable if you don't want the "echo args" feature
+let g:scnvim_echo_args = 1
+
+" configure the color
+highlight SCNvimEval guifg=black guibg=white ctermfg=black ctermbg=white
+
+" create a custom status line for supercollider buffers
+function! s:set_sclang_statusline()
+    setlocal stl=
+    setlocal stl+=%f
+    setlocal stl+=%=
+    setlocal stl+=%(%l,%c%)
+    setlocal stl+=\ \|
+    setlocal stl+=%18.18{scnvim#statusline#server_status()}
+endfunction
+
+augroup scnvim_stl
+  autocmd!
+  autocmd FileType supercollider call <SID>set_sclang_statusline()
+augroup END
+
+let g:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"', '`':'`', '|':'|'}
+
+"""""""""""""""""""""""""""""""
+" Lightline
+"""""""""""""""""""""""""""""""
+function! LSPStatus() abort
+	let l:diagnosticsDict = LanguageClient#statusLineDiagnosticsCounts()
+	let l:errors = get(l:diagnosticsDict,'E',0)
+	let l:warnings = get(l:diagnosticsDict,'W',0)
+	let l:informations = get(l:diagnosticsDict,'I',0)
+	let l:hints = get(l:diagnosticsDict,'H',0)
+	return l:errors + l:warnings + l:informations + l:hints == 0 ? "✔ " : "E:" . l:errors . " " . "W :" . l:warnings . "I:" . l:informations . " " . "H:" . l:hints
+endfunction
+
+"""""""""""""""""""""""""""""""
+" snippets
+"""""""""""""""""""""""""""""""
+nnoremap <leader>as :execute "tabnew $HOME/.vim/UltiSnips/" . &filetype. ".snippets"<cr>
+
+"""""""""""""""""""""""""""""""
+" Deoplete
+"""""""""""""""""""""""""""""""
+let g:deoplete#enable_at_startup = 1
+call deoplete#custom#option('smart_case', v:true)
+
+"""""""""""""""""""""""""""""""""""""
+" YouCompleteMe, UltiSnips and cpp
+"""""""""""""""""""""""""""""""""""""
+let g:ycm_global_ycm_extra_conf = '~/.config/nvim/global_extra_conf.py'
+
+" Better diagnostics
+let g:ycm_enable_diagnostic_signs = 1
+let g:ycm_show_diagnostics_ui = 1
+
+" openframeworks + vim http://brendandawes.com/blog/vim-of
+autocmd  BufRead,BufNewFile  *.cpp let &makeprg = 'if [ -f Makefile ]; then make Release && make RunRelease; else make Release -C .. && make RunRelease -C ..; fi'
+
+" Code formatting
+autocmd FileType c,cpp,proto,javascript AutoFormatBuffer clang-format
+
+let g:ycm_clangd_binary_path = "/usr/bin/clangd"
+
+
+" YCM KEYBINDINGS
+function! YcmStuff() 
+    nnoremap si :YcmCompleter GoToDefinition<cr>
+    nnoremap sk :YcmRestartServer<cr>
+    nnoremap <F1> :YcmCompleter FixIt<cr>
+    nnoremap K :YcmCompleter GetDoc<cr>
+    nnoremap ; :YcmCompleter GetType<cr>
+endfunction
+
+" YouCompleteMe and UltiSnips compatibility.
+let g:ycm_use_ultisnips_completer = 1
+
+" make YCM compatible with UltiSnips (using supertab)
+" from: https://stackoverflow.com/questions/14896327/ultisnips-and-youcompleteme
+let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:SuperTabDefaultCompletionType = '<C-n>'
+
+" Expand snippets from UltiSnips with tab
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<c-tab>"
+let g:UltiSnipsSnippetDirectories = ['UltiSnips', 'scnvim-data']
+
+" Mappings
+
+" Start SCNvim
+au filetype supercollider nnoremap <F1> :SCNvimStart<CR>
+
+" SCNvim Statusline
+au filetype supercollider nnoremap <F2> :SCNvimStatusLine<CR>
+
+" SCNvim tags recompile
+au filetype supercollider nnoremap <F3> :SCNvimTags<CR>
+
+" Clear post window
+au filetype supercollider nmap <F4> <Plug>(scnvim-postwindow-clear)
+
+" Hard stop
+au filetype supercollider nmap <F12> <Plug>(scnvim-hard-stop)
+
+" Echo args
+au filetype supercollider nnoremap <buffer>; :call scnvim#util#echo_args()<CR>
+
+" Recompile<CR>
+au filetype supercollider nnoremap <leader>sk :SCNvimRecompile<CR>
+
+" Regenerate Ctags
+au filetype supercollider nnoremap <buffer> <leader>rt :SCNvimTags<CR>
+
+" Boot server
+au filetype supercollider nnoremap <buffer> <leader>b :call scnvim#sclang#send_silent('Server.local.boot')<CR>
+
+" Look up implementation for class under cursor
+au filetype supercollider nnoremap <buffer> <leader>si g]
+
+au filetype supercollider nnoremap <buffer> <leader>rt :SCNvimTags<CR>
+
+" Statusline
+au fileType supercollider call <SID>set_sclang_statusline()
+
+call plug#begin('~/.local/share/nvim/plugged')
+
+" scnvim
+Plug 'davidgranstrom/scnvim', { 'do': {-> scnvim#install() } }
+
+" fzf
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
+" Deoplete
+Plug 'Shougo/deoplete.nvim'
+Plug 'deoplete-plugins/deoplete-tag'
+
+" Plug 'zchee/deoplete-clang'
+Plug 'Shougo/neco-syntax'
+Plug 'Shougo/context_filetype.vim'
+
+" Auto pairs
+Plug 'jiangmiao/auto-pairs'
+
+" Vim sensible
+Plug 'tpope/vim-sensible'
+
+" Lightline
+Plug 'itchyny/lightline.vim'
+
+" Supertab
+Plug 'ervandew/supertab'
+
+" Prettier
+Plug 'prettier/vim-prettier'
+
+" Ultisnips
+Plug 'SirVer/ultisnips'
+
+" Autoformat
+Plug 'Chiel92/vim-autoformat'
+
+call plug#end()

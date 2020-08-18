@@ -1,0 +1,7 @@
+[user]
+	name = Corné
+	email = cdriesprong@gmail.com
+[alias]
+	co = checkout
+	ci = commit
+	st = status

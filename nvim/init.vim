@@ -1,19 +1,10 @@
 call plug#begin()
 
 Plug 'davidgranstrom/scnvim', { 'do': {-> scnvim#install() } }
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
 Plug 'tidalcycles/vim-tidal'
-Plug 'jiangmiao/auto-pairs'
-Plug 'ervandew/supertab'
-Plug 'godlygeek/tabular'
-Plug 'Chiel92/vim-autoformat'
 Plug 'prettier/vim-prettier'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-sensible'
 Plug 'itchyny/lightline.vim'
-Plug 'unblevable/quick-scope'
 
 " Color schemes
 Plug 'chriskempson/base16-vim'
@@ -117,30 +108,6 @@ au filetype markdown nnoremap <leader>h6 _i###### <esc>
 au filetype markdown nnoremap <leader>t :tabnew term://zsh<CR>
 
 """""""""""""""""""""""""""""""
-" Word count
-"""""""""""""""""""""""""""""""
-" Notes
-let g:notes_directories = ['/home/mads/Dropbox/vimnotes/']
-let g:notes_conceal_code = 0
-
-"""""""""""""""""""""""""""""""
-" Pandoc
-"""""""""""""""""""""""""""""""
-function! g:MDtoPDF()
-    let l:fn_minus_suffix=expand('%:r')
-    let l:fn_out=fn_minus_suffix . '.pdf' 
-
-    execute '! pandoc % -o ' . fn_out
-endfunction
-
-" au filetype markdown nnoremap <F5> :execute MDtoPDF()<CR>
-au filetype markdown nnoremap <F6> :execute '! open %:r.pdf'<CR>
-
-au filetype markdown nnoremap <c-e> :execute MDtoPDF()<CR>
-au filetype markdown nnoremap <leader>o :execute '! open %:r.pdf'<CR>
-
-
-"""""""""""""""""""""""""""""""
 " GENERAL REMAPPINGS
 """""""""""""""""""""""""""""""
 " Reload vimrc
@@ -161,18 +128,6 @@ nnoremap <leader>rb :! source ~/.bash_profile<CR>
 " Find and delete next whitespace
 nnoremap d<space> /\s<cr>x
 nnoremap f<space> /\s<cr>
-
-"""""""""""""""""""""""""""""""
-" Tabularize
-"""""""""""""""""""""""""""""""
-
-" =
-nmap <leader>t= :Tab /=<CR>
-vmap <leader>t= :Tab /=<CR>
-
-" :
-nmap <leader>t: :Tab /:\zs<CR>
-vmap <leader>t: :Tab /:\zs<CR>
 
 """""""""""""""""""""""""""""""
 " SuperCollider stuff
@@ -287,59 +242,9 @@ map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans
 	    \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
 	    \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
-""""""""""""""""""""""""""""""
-" Ignore
-"""""""""""""""""""""""""""""""
-set wildignore+=*\\tmp\\*,*.swp,*.swo,*.zip,.git,.cabal-sandbox
-set wildignore+=*.jpg,*.png,*.gif,*.bmp,*.a,*.o,*.tiff,*.nef
-set wildignore+=*.mp4,*.mkv,*.avi,*.srt
-
-"""""""""""""""""""""""""""""""
-" Performance
-"""""""""""""""""""""""""""""""
-
 " avoid menu.vim (saves ~100ms)
 let g:did_install_default_menus = 1
 let g:did_install_syntax_menu = 1
-
-"""""""""""""""""""""""""""""""
-" Folding
-"""""""""""""""""""""""""""""""
-" if has('folding')
-"   if has('windows')
-"     let &fillchars='vert: '           " less cluttered vertical window separators
-"   endif
-"   set foldmethod=indent               " not as cool as syntax, but faster
-"   set foldlevelstart=99               " start unfolded
-" endif
-
-augroup myformatting
-    autocmd!
-    " autocmd filetype markdown InsertLeave * normal gwap<CR>
-    " autocmd filetype markdown BufWrite * normal gwap<CR>
-augroup END
-
-"""""""""""""""""""""""""""""""
-" Python
-"""""""""""""""""""""""""""""""
-
-" Python3
-let g:pymode_python = 'python3'
-
-" Run file Python
-let g:pymode_run_bind = '<C-e>'
-
-" Docs open Python
-let g:pymode_rope_show_doc_bind = '<S-k>'
-let g:python3_host_prog='/usr/bin/python3'
-
-" Automatic Lint before writing buffer to file
-au BufWritePre *.py :PymodeLintAuto
-
-" Google calendar
-let g:calendar_google_calendar = 1
-let g:calendar_google_task = 1
-let g:calendar_event_start_time=1
 
 " Sessions
 let g:session_autosave = 'yes'
@@ -360,22 +265,6 @@ map ½ $
 " vnoremap ½ $
 
 let g:notes_tab_indents = 0
-
-" colorizer
-" lua require'colorizer'.setup()
-
-" fzf
-nnoremap <C-p> :FZF<CR>
-
-" distraction free writing
-nnoremap <C-g> :Goyo<CR>
-
-" Goyo in markdown
-" au BufWinEnter *.md :exec 'Goyo'
-"
-
-" Processing
-au filetype pde nnoremap <leader>m :make<cr>
 
 " Disable line wrapping in Markdown
 au BufWinEnter *.md set wrap
@@ -417,7 +306,6 @@ augroup c
     autocmd FileType c,cpp,h,hpp,glsl call YcmStuff()
 augroup end
 
-
 " Flak tricks for scnvim like experience
 augroup c
     autocmd!
@@ -449,9 +337,6 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<c-tab>"
 let g:UltiSnipsSnippetDirectories = ['UltiSnips', 'scnvim-data']
 
-" Additional UltiSnips config.
-" let g:UltiSnipsSnippetsDir = '~/.vim/UltiSnips'
-
 " Disable unhelpful semantic completions.
 let g:ycm_filetype_specific_completion_to_disable = {
 			\   'markdown': 1,
@@ -467,77 +352,3 @@ let g:ycm_filetype_blacklist = {
 			\ 'mail': 1
 			\ }
 
-
-" LanguageClient
-" Always draw sign column. Prevent buffer moving when adding/deleting sign.
-set signcolumn=yes
-
-" Required for operations modifying multiple buffers like rename.
-set hidden
-let g:LanguageClient_hoverPreview = 'Auto'
-" let g:LanguageClient_preferredMarkupKind = ['plaintext', 'markdown']
-let g:LanguageClient_serverCommands = {
-    \ 'rust': ['rustup', 'run', 'stable', 'rls'],
-    \ 'python': ['/usr/local/bin/pyls'],
-    \ }
-
-let $RUST_BACKTRACE = 1
-let g:LanguageClient_loggingLevel = 'INFO'
-let g:LanguageClient_virtualTextPrefix = ''
-let g:LanguageClient_loggingFile =  expand('~/.local/share/nvim/LanguageClient.log')
-let g:LanguageClient_serverStderr = expand('~/.local/share/nvim/LanguageServer.log')
-
-let g:LanguageClient_useVirtualText = "No"
-
-"""""""""""""""""""""""""""""""""""""
-" RUST
-"
-" rust requirements
-" rustup component add rls
-" rustup component add rustfmt
-" rustup component add clippy
-"
-" Note: Most of YCM's rust capabilities are disabled by default and must be
-" enabled in the global_extra_conf.py file
-"""""""""""""""""""""""""""""""""""""
-let g:rustfmt_autosave = 1
-
-au FileType rust nnoremap <F1> :call LanguageClient#textDocument_hover()<CR>
-
-function! Rusty()
-    nnoremap <C-e> :terminal cargo run<cr>
-    inoremap <C-e> <esc>:terminal cargo run<cr>
-
-	" LanguageClient
-	nnoremap <F5> :call LanguageClient_contextMenu()<CR>	
-
-	" Get nice info on thing under cursor
-	nnoremap K :call LanguageClient#textDocument_hover()<CR>
-
-	" Where is thing under cursor defined?
-    nnoremap <silent> <leader>si :call LanguageClient#textDocument_definition()<CR>
-	
-	" Where is thing under cursor used?
-	nnoremap <silent> <leader>sl :call LanguageClient#textDocument_references()<CR>
-
-    nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
-
-	" Open local rust documentation in browser
-	" nnoremap <leader>K :! cargo doc --open<cr>	
-endfunction 
-
-augroup rust
-    autocmd!
-    autocmd FileType rust call Rusty()
-	" autocmd FileType rust call YcmStuff()
-augroup end
-
-"""""""""""""""""""""""""""""""
-" Arduino / Teensy
-"""""""""""""""""""""""""""""""
-nnoremap <buffer> <leader>am :ArduinoVerify<CR>
-autocmd BufNewFile,BufRead *.ino nnoremap <C-e> :ArduinoUpload<CR>
-nnoremap <buffer> <leader>au :ArduinoUpload<CR>
-nnoremap <buffer> <leader>ad :ArduinoUploadAndSerial<CR>
-nnoremap <buffer> <leader>ab :ArduinoChooseBoard<CR>
-nnoremap <buffer> <leader>ap :ArduinoChooseProgrammer<CR>
